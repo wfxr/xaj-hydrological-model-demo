@@ -3,10 +3,13 @@ import HydrologicalModel.*;
 import static HydrologicalModelHelper.ModelEvaluation.NashSutcliffeEfficiency;
 
 /**
+ * 新安江水文模型示例
+ * 模型参数通过粒子群优化算法率定
+ *
  * Created by Wenxuan on 1/27/2016.
  * Email: wenxuan-zhang@outlook.com
  */
-public class Demo1 {
+public class XajModelDemo {
     // 降雨量序列
     static double[] P = new double[]{
             10, 24.1, 20.4, 18.3, 10.1, 5.5, 0.6, 3.1, 1.9, 4.6, 5,
@@ -30,31 +33,27 @@ public class Demo1 {
         // 创建新安江水文模型
         XajModel xaj = new XajModel();
 
-        // 设置模型参数
+        // 设置水文模型参数
         xaj.SetSoilWaterStorageParam(100, 50, 100);
         xaj.SetEvapotranspirationParam(0.55, 0.10);
         xaj.SetRunoffGenerationParam(0.18, 0.00);
         xaj.SetSourcePartitionParam(15.89, 2.00, 0.65, 0.05);
         xaj.SetRunoffConcentrationParam(0.45, 0.05, 537);
 
-        // 执行产流计算
-        RunoffGenerationResult runoffGenerationResult =
-                xaj.ComputeRunoffGeneration(P, EI, 42.41, 100.00, 43.07);
-
-        // 执行流域划分计算
-        SourcePartitionResult sourcePartitionResult =
-                xaj.ComputeSourcePartition(runoffGenerationResult, 9.86, 2);
-
-        // 执行汇流计算
-        RunoffConcentrationResult runoffConcentrationResult =
-                xaj.ComputeRunoffConcentration(sourcePartitionResult, 44.35, 19.23, 2);
+        // 运行模型并获取结果
+        RunoffConcentrationResult result = xaj
+                .ComputeRunoffGeneration(P, EI, 42.41, 100.00, 43.07)   // 产流计算
+                .ComputeSourcePartition(9.86, 2)                        // 流域划分计算
+                .ComputeRunoffConcentration(44.35, 19.23, 2)            // 汇流计算
+                .GetResult();                                           // 获取结果
 
         // 输出结果
-        PrintResult(runoffConcentrationResult);
+        PrintResult(result);
     }
 
     // 格式化输出模型的计算结果
     public static void PrintResult(RunoffConcentrationResult result) {
+        // QRS/QRSS/QRG/Q 分别表示地表径流，壤中流，地下径流和总径流序列
         System.out.printf("%12s%12s%12s%12s\n", "QRS", "QRSS", "QRG", "Q");
         for (int i = 0; i < result.Length; ++i)
             System.out.printf("%12.2f%12.2f%12.2f%12.2f\n", result.QRS[i], result.QRSS[i], result.QRG[i], result.Q[i]);

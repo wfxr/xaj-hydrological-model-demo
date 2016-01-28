@@ -4,7 +4,7 @@ import static HydrologicalModelHelper.ModelEvaluation.NashSutcliffeEfficiency;
 
 /**
  * 新安江水文模型示例
- * 模型参数通过粒子群优化算法率定
+ * <p>
  *
  * Created by Wenxuan on 1/27/2016.
  * Email: wenxuan-zhang@outlook.com
@@ -31,17 +31,17 @@ public class XajModelDemo {
 
     public static void main(String[] args) {
         // 创建新安江水文模型
-        XajModel xaj = new XajModel();
+        XajModel xajModel = new XajModel();
 
-        // 设置水文模型参数
-        xaj.SetSoilWaterStorageParam(100, 50, 100);
-        xaj.SetEvapotranspirationParam(0.55, 0.10);
-        xaj.SetRunoffGenerationParam(0.18, 0.00);
-        xaj.SetSourcePartitionParam(15.89, 2.00, 0.65, 0.05);
-        xaj.SetRunoffConcentrationParam(0.45, 0.05, 537);
+        // 设置水文模型参数(模型参数通过粒子群优化算法率定)
+        xajModel.SetSoilWaterStorageParam(100, 50, 100)
+                .SetEvapotranspirationParam(0.55, 0.10)
+                .SetRunoffGenerationParam(0.18, 0.00)
+                .SetSourcePartitionParam(15.89, 2.00, 0.65, 0.05)
+                .SetRunoffConcentrationParam(0.45, 0.05, 537);
 
         // 运行模型并获取结果
-        RunoffConcentrationResult result = xaj
+        RunoffConcentrationResult result = xajModel
                 .ComputeRunoffGeneration(P, EI, 42.41, 100.00, 43.07)   // 产流计算
                 .ComputeSourcePartition(9.86, 2)                        // 流域划分计算
                 .ComputeRunoffConcentration(44.35, 19.23, 2)            // 汇流计算
